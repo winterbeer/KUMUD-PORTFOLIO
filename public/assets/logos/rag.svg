@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Vector DB stack -->
+  <ellipse cx="12" cy="6" rx="7" ry="2.5" fill="none" stroke="#ffffff" stroke-width="1.4"/>
+  <rect x="5" y="6" width="14" height="5" fill="none" stroke="#ffffff" stroke-width="1.4"/>
+  <ellipse cx="12" cy="11" rx="7" ry="2.5" fill="none" stroke="#ffffff" stroke-width="1.4"/>
+  <!-- Arrow up — retrieval -->
+  <path d="M12 17v-3m-2 1.5l2-2 2 2" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- small dot — augment -->
+  <circle cx="12" cy="20" r="1.3" fill="#ffffff"/>
+</svg>
