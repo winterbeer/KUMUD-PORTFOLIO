@@ -3,25 +3,22 @@
 import createGlobe from "cobe";
 import { useMotionValue, useSpring } from "motion/react";
 import { useEffect, useRef } from "react";
-
 import { twMerge } from "tailwind-merge";
 
 const MOVEMENT_DAMPING = 1400;
 
 const GLOBE_CONFIG = {
-  width: 800,
-  height: 800,
-  onRender: () => {},
   devicePixelRatio: 2,
   phi: 0,
   theta: 0.3,
   dark: 1,
-  diffuse: 1.8,
+  diffuse: 1.2,
   mapSamples: 16000,
-  mapBrightness: 10,
-  baseColor: [0.1, 0.1, 0.3],
+  mapBrightness: 8,
+  mapBaseBrightness: 0.05,
+  baseColor: [0.1, 0.08, 0.28],
   markerColor: [0.6, 0.4, 1],
-  glowColor: [0.4, 0.25, 0.8],
+  glowColor: [0.38, 0.22, 0.75],
   markers: [
     { location: [14.5995, 120.9842], size: 0.03 },
     { location: [19.076, 72.8777], size: 0.05 },
@@ -38,18 +35,12 @@ const GLOBE_CONFIG = {
 };
 
 export function Globe({ className, canvasClassName, config = GLOBE_CONFIG }) {
-  let phi = 0;
   let width = 0;
   const canvasRef = useRef(null);
   const pointerInteracting = useRef(null);
-  const pointerInteractionMovement = useRef(0);
 
   const r = useMotionValue(0);
-  const rs = useSpring(r, {
-    mass: 1,
-    damping: 30,
-    stiffness: 100,
-  });
+  const rs = useSpring(r, { mass: 1, damping: 30, stiffness: 100 });
 
   const updatePointerInteraction = (value) => {
     pointerInteracting.current = value;
@@ -61,18 +52,15 @@ export function Globe({ className, canvasClassName, config = GLOBE_CONFIG }) {
   const updateMovement = (clientX) => {
     if (pointerInteracting.current !== null) {
       const delta = clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta;
       r.set(r.get() + delta / MOVEMENT_DAMPING);
+      pointerInteracting.current = clientX;
     }
   };
 
   useEffect(() => {
     const onResize = () => {
-      if (canvasRef.current) {
-        width = canvasRef.current.offsetWidth;
-      }
+      if (canvasRef.current) width = canvasRef.current.offsetWidth;
     };
-
     window.addEventListener("resize", onResize);
     onResize();
 
@@ -80,44 +68,46 @@ export function Globe({ className, canvasClassName, config = GLOBE_CONFIG }) {
       ...config,
       width: width * 2,
       height: width * 2,
-      onRender: (state) => {
-        if (!pointerInteracting.current) phi += 0.005;
-        state.phi = phi + rs.get();
-        state.width = width * 2;
-        state.height = width * 2;
-      },
     });
 
-    setTimeout(() => (canvasRef.current.style.opacity = "1"), 0);
+    // v2 API: animate via globe.update() + rAF
+    let phi = 0;
+    let frameId;
+    const animate = () => {
+      phi += 0.005;
+      globe.update({
+        phi: phi + rs.get(),
+        width: width * 2,
+        height: width * 2,
+      });
+      frameId = requestAnimationFrame(animate);
+    };
+    frameId = requestAnimationFrame(animate);
+
+    setTimeout(() => {
+      if (canvasRef.current) canvasRef.current.style.opacity = "1";
+    }, 0);
+
     return () => {
       globe.destroy();
+      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", onResize);
     };
   }, [rs, config]);
 
   return (
-    <div
-      className={twMerge(
-        "mx-auto aspect-[1/1] w-full max-w-[600px]",
-        className
-      )}
-    >
+    <div className={twMerge("mx-auto aspect-[1/1] w-full max-w-[600px]", className)}>
       <canvas
         className={twMerge(
-          "size-[30rem] opacity-0 transition-opacity duration-500 [contain:layout_paint_size]",
+          "size-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]",
           canvasClassName
         )}
         ref={canvasRef}
-        onPointerDown={(e) => {
-          pointerInteracting.current = e.clientX;
-          updatePointerInteraction(e.clientX);
-        }}
+        onPointerDown={(e) => updatePointerInteraction(e.clientX)}
         onPointerUp={() => updatePointerInteraction(null)}
         onPointerOut={() => updatePointerInteraction(null)}
         onMouseMove={(e) => updateMovement(e.clientX)}
-        onTouchMove={(e) =>
-          e.touches[0] && updateMovement(e.touches[0].clientX)
-        }
+        onTouchMove={(e) => e.touches[0] && updateMovement(e.touches[0].clientX)}
       />
     </div>
   );
