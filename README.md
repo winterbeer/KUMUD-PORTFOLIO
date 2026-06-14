@@ -1,19 +1,19 @@
 # Kumud Sharma — Portfolio
 
-Personal portfolio website built with React, Three.js, and Framer Motion.
+**Live:** https://kumud-portfolio-nu.vercel.app/
 
-**Live:** [add your Vercel URL here]
+AI & Automation Engineer. This portfolio covers:
 
-## Stack
+- **Projects** — Sakhi (maternal care AI), ICP Generator (multi-agent), Company Brain (production AI assistant), CRM Dashboard Automation
+- **Experience** — from independent builder to AI Research Intern to full-time at HCA
+- **About** — who I am and what I build
+- **Contact** — get in touch
 
-- React 19 + Vite
-- Three.js / React Three Fiber — 3D astronaut model with parallax background
-- Framer Motion — scroll animations
-- Tailwind CSS v4
-
-## Run locally
+## Run Locally
 
 ```bash
+git clone https://github.com/winterbeer/KUMUD-PORTFOLIO.git
+cd KUMUD-PORTFOLIO
 npm install
 npm run dev
 ```
