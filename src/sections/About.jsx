@@ -86,7 +86,7 @@ const About = () => {
             </p>
           </div>
           <div className="flex-1 flex items-center justify-center overflow-hidden h-full">
-            <Globe canvasClassName="size-[13rem]" />
+            <Globe canvasClassName="size-full" />
           </div>
         </div>
         {/* Grid 4 */}
